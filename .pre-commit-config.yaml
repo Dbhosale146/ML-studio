@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^services/api/
+      - id: ruff-format
+        files: ^services/api/
+  - repo: local
+    hooks:
+      - id: web-lint
+        name: web lint (oxlint + prettier)
+        entry: bash -c "cd apps/web && npm run lint"
+        language: system
+        files: ^apps/web/
+        pass_filenames: false

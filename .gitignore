@@ -1,0 +1,36 @@
+# dependencies & builds
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+*.egg-info/
+
+# runtime data
+storage/*
+!storage/.gitkeep
+mlruns/
+
+# local config & secrets
+.env
+.env.local
+
+# test output
+apps/web/test-results/
+apps/web/playwright-report/
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# personal files kept next to the repo (not part of the product)
+backup/
+backend/
