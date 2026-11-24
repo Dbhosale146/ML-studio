@@ -49,7 +49,7 @@ def column_kind(s: pd.Series, name: str) -> str:
     n = len(nn)
     if n == 0:
         return "empty"
-    nunique = int(nn.astype(str).nunique()) if s.dtype == object else int(nn.nunique())
+    nunique = int(nn.astype(str).nunique()) if not pd.api.types.is_numeric_dtype(s) else int(nn.nunique())
     if nunique <= 1:
         return "constant"
     if pd.api.types.is_datetime64_any_dtype(s):
@@ -89,7 +89,9 @@ def looks_pii(s: pd.Series, name: str) -> bool:
     sample = s.dropna().astype(str).head(200)
     if sample.empty:
         return False
-    return bool(sample.str.match(EMAIL_RE).mean() > 0.5 or (s.dtype == object and sample.str.match(PHONE_RE).mean() > 0.8))
+    return bool(
+        sample.str.match(EMAIL_RE).mean() > 0.5 or (not pd.api.types.is_numeric_dtype(s) and sample.str.match(PHONE_RE).mean() > 0.8)
+    )
 
 
 def profile_dataframe(df: pd.DataFrame, file_name: str = "", sheet: str = "", notes: list[str] | None = None) -> dict[str, Any]:

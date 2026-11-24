@@ -101,7 +101,7 @@ def card_fraud(rng: np.random.Generator) -> None:
     age = rng.integers(10, 4000, n)
     present = rng.random(n) < 0.55
     dev = rng.random(n) < 0.05
-    logit = -7.2 + 0.0016 * amount + 1.4 * foreign + 0.0006 * dist + 0.75 * cnt1h - 0.0009 * age + 1.2 * dev - 0.9 * present + 1.1 * np.isin(cat, ["electronics", "jewelry", "online_retail"])
+    logit = -6.2 + 0.006 * amount + 2.2 * foreign + 0.0008 * dist + 1.1 * cnt1h - 0.0008 * age + 2.0 * dev - 1.2 * present + 1.4 * np.isin(cat, ["electronics", "jewelry", "online_retail"])
     fraud = rng.random(n) < 1 / (1 + np.exp(-logit))
     amount = np.where(fraud, amount * rng.uniform(1.5, 4, n), amount).round(2)
     df = pd.DataFrame(
