@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Literal
+from datetime import UTC, datetime
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer
+
+
+def _utc_iso(d: datetime) -> str:
+    return (d if d.tzinfo else d.replace(tzinfo=UTC)).isoformat()
+
+
+# Timestamps are stored as naive UTC; always send them with an explicit offset so browsers do not read them as local time.
+UtcDateTime = Annotated[datetime, PlainSerializer(_utc_iso, return_type=str)]
 
 
 class ErrorBody(BaseModel):
@@ -75,7 +83,7 @@ class DatasetOut(BaseModel):
     quality: int | None = None
     needs_sheet: bool = False
     used_by: list[str] = Field(default_factory=list)
-    created_at: datetime
+    created_at: UtcDateTime
 
 
 class SheetChoiceIn(BaseModel):
@@ -106,8 +114,8 @@ class SessionOut(BaseModel):
     stage_key: str | None
     stage_index: int
     error: dict[str, Any] | None = None
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDateTime
+    updated_at: UtcDateTime
 
 
 class ReplyIn(BaseModel):
@@ -150,13 +158,13 @@ class ModelSummaryOut(BaseModel):
     session_id: str | None
     prediction_count: int
     error: str | None
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDateTime
+    updated_at: UtcDateTime
 
 
 class ModelVersionOut(BaseModel):
     version: int
-    created_at: datetime
+    created_at: UtcDateTime
     data_hash: str
     primary_metric: MetricOut | None
     algorithm: str | None
@@ -238,7 +246,7 @@ class BatchJobOut(BaseModel):
     rows: int | None
     summary: dict[str, Any] | None
     error: str | None
-    created_at: datetime
+    created_at: UtcDateTime
     download_url: str | None = None
 
 
@@ -249,4 +257,4 @@ class ActivityOut(BaseModel):
     model_id: str | None
     dataset_id: str | None
     session_id: str | None
-    created_at: datetime
+    created_at: UtcDateTime
