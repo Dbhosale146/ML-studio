@@ -1,0 +1,139 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datalyon AI Data Scientist",
+    "description": "Internal API of the Datalyon web app (not a public prediction API).",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Service health, LLM mode and limits",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "llm": {
+            "$ref": "#/components/schemas/LlmStatusOut"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/LimitsOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "display_name",
+          "llm",
+          "limits"
+        ],
+        "title": "HealthOut"
+      },
+      "LimitsOut": {
+        "properties": {
+          "max_upload_mb": {
+            "type": "integer",
+            "title": "Max Upload Mb"
+          },
+          "max_rows": {
+            "type": "integer",
+            "title": "Max Rows"
+          },
+          "max_columns": {
+            "type": "integer",
+            "title": "Max Columns"
+          },
+          "train_time_budget_s": {
+            "type": "integer",
+            "title": "Train Time Budget S"
+          }
+        },
+        "type": "object",
+        "required": [
+          "max_upload_mb",
+          "max_rows",
+          "max_columns",
+          "train_time_budget_s"
+        ],
+        "title": "LimitsOut"
+      },
+      "LlmStatusOut": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "mock",
+              "gemini"
+            ],
+            "title": "Provider"
+          },
+          "configured_provider": {
+            "type": "string",
+            "title": "Configured Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "configured_provider"
+        ],
+        "title": "LlmStatusOut"
+      }
+    }
+  }
+}
