@@ -97,7 +97,7 @@ def charts(task: TabularTask, pred: Arr, y: Arr, threshold: float) -> dict[str, 
         out["prevalence"] = float(yb.mean())
         cm = confusion_matrix(yb, (p >= threshold).astype(int), labels=[0, 1])
         out["confusion"] = {"labels": task.classes, "matrix": cm.tolist(), "threshold": threshold}
-        _, curve = calibration_curve(yb, p)
+        _, curve = calibration_curve(yb, p, quantile=True)
         out["calibration"] = curve
         bins = np.linspace(0, 1, 21)
         out["scores"] = [

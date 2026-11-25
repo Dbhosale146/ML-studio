@@ -177,9 +177,11 @@ function SessionView({ sessionId }: { sessionId: string }) {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Badge color={llm?.provider === 'gemini' ? 'indigo' : 'slate'}>
-              {llm?.provider === 'gemini' ? `Gemini · ${llm.model}` : 'MockLLM (offline)'}
-            </Badge>
+            <span className="hidden sm:inline-flex">
+              <Badge color={llm?.provider === 'gemini' ? 'indigo' : 'slate'}>
+                {llm?.provider === 'gemini' ? `Gemini · ${llm.model}` : 'MockLLM (offline)'}
+              </Badge>
+            </span>
             {running && (
               <Button size="sm" variant="danger" icon={Square} onClick={() => cancel.mutate()} disabled={cancel.isPending}>
                 Cancel
@@ -206,7 +208,11 @@ function SessionView({ sessionId }: { sessionId: string }) {
               retrying={retry.isPending}
               onShowDecisions={() => (setTab('decisions'), setShowWs(true))}
             />
-            {ask && <AskPanel ask={ask} onAnswer={onAnswer} busy={reply.isPending} />}
+            {ask && (
+              <div data-testid="ask" data-ask-kind={ask.kind} data-ask-id={ask.ask_id}>
+                <AskPanel ask={ask} onAnswer={onAnswer} busy={reply.isPending} />
+              </div>
+            )}
             {reply.isError && (
               <p role="alert" className="pl-11 text-[13px] text-red-700">
                 {errorMessage(reply.error)}

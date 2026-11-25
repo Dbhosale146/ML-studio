@@ -103,11 +103,13 @@ def univariate_leakage(task: TabularTask, columns: list[str]) -> list[dict[str, 
     return sorted(out.values(), key=lambda d: -d["score"])
 
 
-def calibration_curve(yb: Arr, p: Arr, bins: int = 10) -> tuple[float, list[dict[str, float]]]:
-    edges = np.linspace(0, 1, bins + 1)
+def calibration_curve(yb: Arr, p: Arr, bins: int = 10, quantile: bool = False) -> tuple[float, list[dict[str, float]]]:
+    """ECE + reliability points. Uniform bins for ECE; quantile bins give every chart point the same number of rows."""
+    edges = np.unique(np.quantile(p, np.linspace(0, 1, bins + 1))) if quantile else np.linspace(0, 1, bins + 1)
     ece, curve = 0.0, []
+    last = edges[-1]
     for lo, hi in itertools.pairwise(edges):
-        m = (p >= lo) & ((p < hi) if hi < 1 else (p <= hi))
+        m = (p >= lo) & ((p < hi) if hi < last else (p <= hi))
         if m.any():
             ece += abs(float(p[m].mean()) - float(yb[m].mean())) * float(m.mean())
             curve.append({"predicted": float(p[m].mean()), "observed": float(yb[m].mean()), "count": int(m.sum())})

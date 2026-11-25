@@ -424,6 +424,10 @@ function BatchPredict({ model, schema }: { model: ModelDetail; schema: InputSche
   )
 }
 
+/** Forecasts are estimates: whole units above 100, two decimals below. */
+const roundFc = (n: number | null | undefined) =>
+  n == null || Number.isNaN(n) ? '—' : n.toLocaleString('en-US', { maximumFractionDigits: Math.abs(n) >= 100 ? 0 : 2 })
+
 function ForecastPlayground({ model, schema }: { model: ModelDetail; schema: InputSchema }) {
   const fc = (schema.forecast ?? {}) as { series?: string[]; horizon?: number; unit?: string }
   const seriesList = fc.series ?? []
@@ -499,10 +503,10 @@ function ForecastPlayground({ model, schema }: { model: ModelDetail; schema: Inp
               <tbody>
                 {view.table.map((r) => (
                   <tr key={r.date} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-1.5 font-mono">{r.date}</td>
-                    <td className="tabular px-2 py-1.5 text-right font-mono font-semibold">{num(r.forecast)}</td>
-                    <td className="tabular px-4 py-1.5 text-right font-mono text-slate-500">
-                      {num(r.lower_80)} – {num(r.upper_80)}
+                    <td className="whitespace-nowrap px-4 py-1.5 font-mono">{r.date}</td>
+                    <td className="tabular whitespace-nowrap px-2 py-1.5 text-right font-mono font-semibold">{roundFc(r.forecast)}</td>
+                    <td className="tabular whitespace-nowrap px-4 py-1.5 text-right font-mono text-slate-500">
+                      {roundFc(r.lower_80)} – {roundFc(r.upper_80)}
                     </td>
                   </tr>
                 ))}

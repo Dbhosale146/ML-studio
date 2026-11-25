@@ -296,6 +296,8 @@ def forecast_view(art: dict[str, Any], series: str | None, horizon: int | None) 
     future = [p for p in pts if "forecast" in p][:h]
     keep_dates = {p["date"] for p in future}
     plot = [p for p in pts if "forecast" not in p or p["date"] in keep_dates]
+    history = sum(1 for p in plot if "forecast" not in p)
+    plot = plot[max(0, history - max(52, 6 * h)) :]  # recent history keeps the forecast readable
     return {
         "series": key,
         "horizon": h,
