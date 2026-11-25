@@ -149,9 +149,9 @@ export function ProfileView({ profile }: { profile: Profile }) {
                     {c.role}
                   </Badge>
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2" aria-label={`${c.missing_pct}% missing`}>
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
+                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100" aria-hidden>
                       <div
                         className={cx('h-full rounded-full', c.missing_pct > 20 ? 'bg-amber-500' : 'bg-slate-400')}
                         style={{ width: `${c.missing_pct ? Math.max(3, c.missing_pct) : 0}%` }}
