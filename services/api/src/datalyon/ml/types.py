@@ -34,6 +34,7 @@ class Detection:
     candidate_targets: list[str] = field(default_factory=list)
     leakage_suspects: list[dict[str, str]] = field(default_factory=list)
     clarification: str | None = None
+    horizon: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

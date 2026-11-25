@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     llm_timeout_s: int = 60
 
     storage_dir: Path = REPO_ROOT / "storage"
+    samples_dir: Path = REPO_ROOT / "data" / "samples"
     database_url: str | None = None
 
     max_upload_mb: int = 50

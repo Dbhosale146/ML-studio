@@ -205,7 +205,9 @@ class InputSchemaOut(BaseModel):
 
 
 class PredictIn(BaseModel):
-    rows: list[dict[str, Any]] = Field(..., min_length=1, max_length=1000)
+    rows: list[dict[str, Any]] = Field(
+        default_factory=list, max_length=1000, description="Tabular models: 1-1000 rows to score. Not used for forecasting."
+    )
     series: str | None = Field(None, description="Forecasting only: series to forecast, or null for the total")
     horizon: int | None = Field(None, ge=1, le=1000, description="Forecasting only")
     explain: bool = True

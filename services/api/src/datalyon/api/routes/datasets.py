@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 
+from ...core.errors import AppError
 from ...db.repositories.datasets import DatasetRepo
 from ...schemas.api import DatasetOut, ErrorEnvelope, Page, PreviewOut, SheetChoiceIn
 
@@ -22,6 +23,32 @@ def repo(request: Request) -> DatasetRepo:
 def upload_dataset(file: UploadFile = File(..., description=".xlsx, .xls or .csv"), r: DatasetRepo = Depends(repo)) -> dict[str, Any]:
     ds = r.create_from_upload(file.filename or "upload", file.file)
     return r.to_out(ds)
+
+
+SAMPLE_GOALS = {
+    "customer_churn.xlsx": "Predict which customers will churn",
+    "card_fraud.xlsx": "Detect fraudulent card transactions",
+    "house_prices.xlsx": "Predict the sale price of a house",
+    "store_weekly_demand.xlsx": "Forecast weekly units sold per store for the next 8 weeks",
+    "product_category.xlsx": "Predict the category of a product",
+}
+
+
+@router.get("/samples", summary="Bundled sample files (for the suggested-goal chips)")
+def list_samples(request: Request) -> list[dict[str, Any]]:
+    root = request.app.state.settings.samples_dir
+    return [{"name": n, "goal": g, "available": (root / n).exists()} for n, g in SAMPLE_GOALS.items()]
+
+
+@router.post("/samples/{name}", response_model=DatasetOut, status_code=201, summary="Load a bundled sample file as a new dataset")
+def import_sample(name: str, request: Request, r: DatasetRepo = Depends(repo)) -> dict[str, Any]:
+    if name not in SAMPLE_GOALS:
+        raise AppError("unknown_sample", f"There is no sample called '{name}'.", 404)
+    path = request.app.state.settings.samples_dir / name
+    if not path.exists():
+        raise AppError("sample_missing", "Sample files are not generated yet. Run `make samples`.", 404)
+    with open(path, "rb") as f:
+        return r.to_out(r.create_from_upload(name, f))
 
 
 @router.post("/{dataset_id}/sheet", response_model=DatasetOut, summary="Choose the sheet (and optionally the header row) to use")
