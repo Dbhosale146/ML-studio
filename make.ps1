@@ -19,8 +19,8 @@ switch ($Target) {
   }
   'dev-api' { In $Api { uv run uvicorn datalyon.main:app --reload --reload-dir src --port 8000 } }
   'dev-web' { In $Web { npm run dev } }
-  'test' { In $Api { uv run pytest }; In $Web { npm test } }
-  'test-api' { In $Api { uv run pytest } }
+  'test' { In $Api { uv run pytest --cov-fail-under=80 }; In $Web { npm test } }
+  'test-api' { In $Api { uv run pytest --cov-fail-under=80 } }
   'test-web' { In $Web { npm test } }
   'lint' { In $Api { uv run ruff check src tests; uv run ruff format --check src tests }; In $Web { npm run lint } }
   'format' { In $Api { uv run ruff format src tests; uv run ruff check --fix src tests }; In $Web { npm run format } }

@@ -20,7 +20,7 @@ jobs:
       - run: uv run ruff check src tests
       - run: uv run ruff format --check src tests
       - run: uv run mypy
-      - run: uv run pytest
+      - run: uv run pytest --cov-fail-under=80
         env:
           LLM_PROVIDER: mock
           MLFLOW_ENABLED: "false"
@@ -60,4 +60,3 @@ jobs:
         env:
           LLM_PROVIDER: mock
           MLFLOW_ENABLED: "false"
-          E2E_BROWSER: chromium

@@ -22,7 +22,7 @@ dev-web:
 test: test-api test-web
 
 test-api:
-	cd $(API) && uv run pytest
+	cd $(API) && uv run pytest --cov-fail-under=80
 
 test-web:
 	cd $(WEB) && npm test
