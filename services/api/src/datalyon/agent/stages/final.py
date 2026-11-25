@@ -26,11 +26,15 @@ def _final_payload(ctx: StageContext, final: FinalResult, metric: str) -> dict[s
         "runner_up": final.runner_up["candidate"] if final.runner_up else None,
         "runner_up_score": display(metric, final.runner_up["holdout"]) if final.runner_up else None,
         "top_features": [c for c, _ in final.importance[:5]],
-        "holdout_metrics": {m["name"]: m["display"] for m in final.metrics},
+        # every metric next to its naive baseline, so the writer can tell a real lift from a flattering number
+        "holdout_metrics": {m["name"]: f"{m['display']} (naive baseline {m['baseline']})" for m in final.metrics},
         "cv": f"{display(metric, final.cv_mean)} ± {display(metric, final.cv_std)}",
         "target": task.target,
         "problem": ctx.state["plan"]["problem_label"],
     }
+    if task.problem_type in ("binary", "multiclass"):
+        majority = float(np.bincount(np.asarray(task.y_hold, dtype=int)).max() / max(len(task.y_hold), 1))
+        facts["majority_class_share"] = f"{majority * 100:.1f}%"
     with ctx.tool("explainer.write(model_card)"):
         expl = ctx.llm.explain_model(facts)
     return {
